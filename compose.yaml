@@ -7,5 +7,33 @@ services:
     environment:
       PORT: 8000
     ports:
-      - '8000:8000'
+      - '8880:8000'
     restart: "no"
+    depends_on:
+      - db  # Aggiungiamo la dipendenza dal database
+
+  # Servizio per il database MySQL
+  db:
+    image: mysql:8.0  # Usa l'immagine di MySQL
+    container_name: mysql-database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: my_database         # Nome del database da usare
+      MYSQL_USER: user                    # Nome utente per il database
+      MYSQL_PASSWORD: password 
+    ports:
+      - '3306:3306'  # Porta del database
+
+  # Servizio phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - '8080:80'  # phpMyAdmin accessibile su http://localhost:8080
+    environment:
+      PMA_HOST: db  # Nome del servizio del database (lo stesso usato sopra)
+      PMA_PORT: 3306
+    depends_on:
+      - db  # phpMyAdmin dipende dal database
